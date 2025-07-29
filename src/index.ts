@@ -13,7 +13,7 @@ app.use(express.json());
 setupSwagger(app);
 
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'https://bookhotelui.netlify.app/',
   credentials: true,
 }));
 
