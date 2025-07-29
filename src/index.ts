@@ -13,8 +13,8 @@ app.use(express.json());
 setupSwagger(app);
 
 app.use(cors({
-  origin: 'https://bookhotelui.netlify.app/',
-  credentials: true,
+  origin: '*',
+  credentials: false,
 }));
 
 app.use('/rooms', roomRoutes);
