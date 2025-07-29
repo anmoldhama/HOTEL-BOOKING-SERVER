@@ -12,10 +12,7 @@ const app = express();
 app.use(express.json());
 setupSwagger(app);
 
-app.use(cors({
-  origin: '*',
-  credentials: false,
-}));
+app.use(cors());
 
 app.use('/rooms', roomRoutes);
 app.use('/session', userRoutes);
