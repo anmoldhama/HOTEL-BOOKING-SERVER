@@ -16,7 +16,8 @@ const router = express.Router();
  *         description: A list of rooms
  */
 
-router.get('/',userAuth, getAllRooms);
+// router.get('/',userAuth, getAllRooms);
+router.get('/', getAllRooms);
 
 /**
  * @swagger
@@ -29,7 +30,8 @@ router.get('/',userAuth, getAllRooms);
  *       200:
  *         description: Room bookings reset
  */
-router.post('/reset',userAuth, resetRooms);
+// router.post('/reset',userAuth, resetRooms);
+router.post('/reset', resetRooms);
 
 /**
  * @swagger
@@ -42,7 +44,9 @@ router.post('/reset',userAuth, resetRooms);
  *       200:
  *         description: Random rooms booked
  */
-router.post('/random',userAuth, randomOccupancy);
+// router.post('/random',userAuth, randomOccupancy);
+
+router.post('/random', randomOccupancy);
 
 /**
  * @swagger
@@ -65,6 +69,7 @@ router.post('/random',userAuth, randomOccupancy);
  *       200:
  *         description: Booked room details
  */
-router.post('/book',userAuth, bookRooms);
+// router.post('/book',userAuth, bookRooms);
+router.post('/book', bookRooms);
 
 export default router;
