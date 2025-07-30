@@ -33,12 +33,33 @@ export const resetRooms = async (_: Request, res: Response) => {
 };
 
 export const randomOccupancy = async (_: Request, res: Response) => {
-  const rooms = await Room.find();
-  const sampleSize = Math.floor(Math.random() * 20) + 5;
-  const shuffled = rooms.sort(() => 0.5 - Math.random()).slice(0, sampleSize);
-  await Promise.all(shuffled.map(room => Room.updateOne({ _id: room._id }, { isBooked: true })));
-  res.json({ message: `${sampleSize} rooms randomly booked.` });
+  try {
+    const rooms = await Room.find({ isBooked: false });
+    if (rooms.length === 0) {
+      return res.status(400).json({ error: 'No available rooms to book.' });
+    }
+
+    const sampleSize = Math.min(Math.floor(Math.random() * 20) + 5, rooms.length); // avoid overflow
+    const shuffled = rooms.sort(() => 0.5 - Math.random()).slice(0, sampleSize);
+
+    await Promise.all(
+      shuffled.map(room =>
+        Room.updateOne({ _id: room._id }, { isBooked: true })
+      )
+    );
+
+    const travelTime = calculateTravelTime(shuffled);
+
+    res.json({
+      message: `${sampleSize} rooms randomly booked.`,
+      bookedRooms: shuffled,
+      travelTime
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error.' });
+  }
 };
+
 
 export const bookRooms = async (req: Request, res: Response) => {
   const { numRooms } = req.body;
