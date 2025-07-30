@@ -2,13 +2,15 @@ import { Request, Response } from 'express';
 import { Room } from '../models/Room';
 
 function calculateTravelTime(rooms: { number: number; floor: number }[]): number {
-  const sorted = rooms.sort((a, b) => a.number - b.number);
-  const first = sorted[0];
-  const last = sorted[sorted.length - 1];
-  const vertical = Math.abs(first.floor - last.floor) * 2;
-  const horizontal = Math.abs((last.number % 100 || last.number % 1000) - (first.number % 100 || first.number % 1000));
+  const uniqueFloors = Array.from(new Set(rooms.map(r => r.floor))).sort((a, b) => a - b);
+  const vertical = (uniqueFloors[uniqueFloors.length - 1] - uniqueFloors[0]) * 2;
+  const sameFloorRooms = rooms.filter(r => r.floor === uniqueFloors[0]);
+  const roomNumbers = sameFloorRooms.map(r => r.number % 100 || r.number % 1000).sort((a, b) => a - b);
+  const horizontal = roomNumbers.length > 1 ? roomNumbers[roomNumbers.length - 1] - roomNumbers[0] : 0;
+
   return vertical + horizontal;
 }
+
 
 function getCombinations(arr: any[], k: number) {
   const result: any[] = [];
