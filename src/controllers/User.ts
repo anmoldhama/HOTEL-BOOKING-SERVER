@@ -45,35 +45,44 @@ export const register = async (req: Request, res: Response): Promise<any> => {
 };
 
 export const login = async (req: Request, res: Response): Promise<any> => {
-    try {
-        const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-        if (!email || !password) {
-            throw new Error("Provide all mandatory fields!")
-        }
-
-        const fetchUser = await User.findOne({ email }).select('+password') as IUser;
-
-        if (!fetchUser) {
-            throw new Error("User not exist!")
-        }
-
-        const isPasswordValid = await fetchUser.validatePassword(password);
-
-        if (!isPasswordValid) {
-            throw new Error("Invalid credentials");
-        }
-
-        const token = await fetchUser.getJWT();
-
-        res.cookie("token", token);
-
-        return res.status(200).send({ status: "Login Successfully!", token: token ,user: fetchUser.fullName});
-
-    } catch (error) {
-        return res.status(500).json({ message: 'Error in login', error });
+    if (!email || !password) {
+      throw new Error("Provide all mandatory fields!");
     }
-}
+
+    const fetchUser = await User.findOne({ email }).select('+password') as IUser;
+
+    if (!fetchUser) {
+      throw new Error("User not exist!");
+    }
+
+    const isPasswordValid = await fetchUser.validatePassword(password);
+
+    if (!isPasswordValid) {
+      throw new Error("Invalid credentials");
+    }
+
+    const token = await fetchUser.getJWT();
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none'
+    });
+
+    return res.status(200).send({
+      status: "Login Successfully!",
+      token: token,
+      user: fetchUser.fullName
+    });
+
+  } catch (error) {
+    return res.status(500).json({ message: 'Error in login', error });
+  }
+};
+
 
 export const getProfile = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
     try {
